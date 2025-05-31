@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60" fill="none">
+  <!-- N8N Icon (stylized) -->
+  <path d="M20 15H28V45H20V15ZM52 15H60V45H52V15Z" fill="#0D9488"/>
+  <path d="M20 15L52 45" stroke="#0D9488" stroke-width="6" stroke-linecap="round"/>
+  
+  <!-- Make.com Icon (stylized) -->
+  <path d="M28 15L60 15" stroke="#0D9488" stroke-width="6" stroke-linecap="round"/>
+  <path d="M28 30L60 30" stroke="#0D9488" stroke-width="6" stroke-linecap="round"/>
+  <path d="M28 45L60 45" stroke="#0D9488" stroke-width="6" stroke-linecap="round"/>
+  
+  <!-- Text -->
+  <text x="70" y="30" font-family="Inter, sans-serif" font-weight="700" font-size="18" fill="#0D9488">N8N & Make</text>
+  <text x="70" y="45" font-family="Inter, sans-serif" font-weight="600" font-size="12" fill="#0F766E">AI Automation</text>
+</svg>

@@ -12,7 +12,7 @@ const SEO: React.FC<SEOProps> = ({
   title = 'N8N & Make AI Automation Services | Enterprise-Grade Business Automation',
   description = 'Transform your business with AI-powered automation using n8n and Make.com. Custom solutions for streamlined operations, increased productivity, and accelerated growth.',
   canonicalUrl = 'https://n8nmake.tech',
-  ogImage = '/og-image.jpg'  // You'll need to add this image to your public directory
+  ogImage = '/og-image.svg'
 }) => {
   const structuredData = {
     '@context': 'https://schema.org',

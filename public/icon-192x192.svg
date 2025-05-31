@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192" fill="none">
+  <!-- Background -->
+  <rect width="192" height="192" rx="32" fill="#0D9488"/>
+  
+  <!-- N8N Icon (stylized) -->
+  <path d="M50 60H70V132H50V60ZM122 60H142V132H122V60Z" fill="white"/>
+  <path d="M50 60L122 132" stroke="white" stroke-width="12" stroke-linecap="round"/>
+  
+  <!-- Make.com Icon (stylized) -->
+  <path d="M70 60L142 60" stroke="white" stroke-width="12" stroke-linecap="round"/>
+  <path d="M70 96L142 96" stroke="white" stroke-width="12" stroke-linecap="round"/>
+  <path d="M70 132L142 132" stroke="white" stroke-width="12" stroke-linecap="round"/>
+</svg>
