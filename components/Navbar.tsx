@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Button from './Button';
 
 const Navbar: React.FC = () => {
   const [navbarHeight, setNavbarHeight] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const calendlyLink = "https://calendly.com/n8n-make-ai/30min";
 
@@ -11,17 +13,26 @@ const Navbar: React.FC = () => {
     if (navRef.current) {
       setNavbarHeight(navRef.current.offsetHeight);
     }
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
     const handleResize = () => {
       if (navRef.current) {
         setNavbarHeight(navRef.current.offsetHeight);
       }
-      // Close mobile menu on resize to avoid layout issues
-      if (window.innerWidth >= 768) { // md breakpoint
+      if (window.innerWidth >= 768) {
         setIsMenuOpen(false);
       }
     };
+
+    window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const navLinks = [
@@ -37,131 +48,160 @@ const Navbar: React.FC = () => {
       const id = href.substring(1);
       const element = document.getElementById(id);
       if (element) {
-        const currentNavbarHeight = navRef.current?.offsetHeight || navbarHeight || 70; 
+        const currentNavbarHeight = navRef.current?.offsetHeight || navbarHeight || 70;
         const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-        const offsetPosition = elementPosition - currentNavbarHeight - 20; 
+        const offsetPosition = elementPosition - currentNavbarHeight - 20;
         
         window.scrollTo({
           top: offsetPosition,
           behavior: 'smooth'
         });
         
-        // Close mobile menu after navigation
         setIsMenuOpen(false);
-      } else {
-        console.warn(`Element with id '${id}' not found for anchor link.`);
       }
     }
   };
 
   return (
-    <header ref={navRef} className="bg-white/95 backdrop-blur-sm border-b border-neutral-200 sticky top-0 z-50 transition-all duration-300">
+    <motion.header
+      ref={navRef}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-white/90 backdrop-blur-lg shadow-lg'
+          : 'bg-transparent'
+      }`}
+    >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-18">
-          <div className="flex-shrink-0">
+        <div className="flex items-center justify-between h-16 md:h-20">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex-shrink-0"
+          >
             <a 
               href="#hero" 
               onClick={(e) => handleAnchorClick(e, e.currentTarget.getAttribute('href'))}
-              className="text-xl font-bold text-primary hover:text-primary-dark transition-colors duration-200"
+              className="text-xl font-bold bg-gradient-to-r from-primary via-teal-500 to-primary bg-clip-text text-transparent hover:opacity-80 transition-opacity duration-200"
               aria-label="N8N & Make AI, Navigate to Hero Section"
             >
               N8N & Make AI
             </a>
-          </div>
+          </motion.div>
 
-          {/* Desktop Navigation */}
           <nav role="navigation" aria-label="Main Navigation" className="hidden md:flex space-x-1 items-center">
-            {navLinks.map((link) => (
-              <a
+            {navLinks.map((link, index) => (
+              <motion.a
                 key={link.text}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
                 href={link.href}
                 onClick={(e) => handleAnchorClick(e, e.currentTarget.getAttribute('href'))}
-                className="text-neutral-600 hover:bg-primary-lighter hover:text-primary-dark px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ease-in-out"
+                className="relative px-3 py-2 text-neutral-600 hover:text-primary transition-colors duration-200 text-sm font-medium group"
               >
                 {link.text}
-              </a>
+                <motion.span
+                  className="absolute bottom-0 left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"
+                  initial={false}
+                />
+              </motion.a>
             ))}
           </nav>
 
           <div className="flex items-center gap-4">
-            {/* Mobile menu button */}
             <button
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-neutral-600 hover:text-primary hover:bg-primary-lighter"
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-lg text-neutral-600 hover:text-primary hover:bg-primary-lighter transition-colors duration-200"
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
               aria-label="Main menu"
             >
               <span className="sr-only">{isMenuOpen ? 'Close main menu' : 'Open main menu'}</span>
-              {/* Hamburger icon */}
-              <svg
-                className={`${isMenuOpen ? 'hidden' : 'block'} h-6 w-6`}
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 24 24"
+              <motion.div
+                animate={isMenuOpen ? "open" : "closed"}
+                className="w-6 h-6 flex flex-col justify-center items-center"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
+                <motion.span
+                  className="w-6 h-0.5 bg-current transform origin-center transition-transform duration-200"
+                  variants={{
+                    open: { rotate: 45, y: 2 },
+                    closed: { rotate: 0, y: 0 }
+                  }}
                 />
-              </svg>
-              {/* Close icon */}
-              <svg
-                className={`${isMenuOpen ? 'block' : 'hidden'} h-6 w-6`}
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
+                <motion.span
+                  className="w-6 h-0.5 bg-current my-1 transform origin-center transition-transform duration-200"
+                  variants={{
+                    open: { opacity: 0 },
+                    closed: { opacity: 1 }
+                  }}
                 />
-              </svg>
+                <motion.span
+                  className="w-6 h-0.5 bg-current transform origin-center transition-transform duration-200"
+                  variants={{
+                    open: { rotate: -45, y: -2 },
+                    closed: { rotate: 0, y: 0 }
+                  }}
+                />
+              </motion.div>
             </button>
 
-            {/* Desktop CTA */}
             <div className="hidden md:block">
-              <Button href={calendlyLink} variant="primary" className="text-sm px-5 py-2">
+              <Button 
+                href={calendlyLink} 
+                variant="primary"
+                className="text-sm px-5 py-2.5 shadow-xl shadow-primary/20 hover:shadow-primary/30"
+              >
                 Get Free Consultation
               </Button>
             </div>
 
-            {/* Mobile CTA */}
             <div className="md:hidden">
-              <Button href={calendlyLink} variant="primary" size="sm" className="px-3 py-1.5">
+              <Button 
+                href={calendlyLink} 
+                variant="primary" 
+                size="sm" 
+                className="px-3 py-1.5"
+              >
                 Contact
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Mobile menu */}
-        <div
-          className={`${
-            isMenuOpen ? 'block' : 'hidden'
-          } md:hidden transition-all duration-200 ease-in-out`}
-          id="mobile-menu"
-        >
-          <div className="px-2 pt-2 pb-3 space-y-1 border-t border-neutral-200">
-            {navLinks.map((link) => (
-              <a
-                key={link.text}
-                href={link.href}
-                onClick={(e) => handleAnchorClick(e, e.currentTarget.getAttribute('href'))}
-                className="block px-3 py-2 rounded-md text-base font-medium text-neutral-600 hover:text-primary hover:bg-primary-lighter"
-              >
-                {link.text}
-              </a>
-            ))}
-          </div>
-        </div>
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden border-t border-neutral-100"
+              id="mobile-menu"
+            >
+              <div className="px-2 pt-2 pb-3 space-y-1">
+                {navLinks.map((link) => (
+                  <motion.a
+                    key={link.text}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    href={link.href}
+                    onClick={(e) => handleAnchorClick(e, e.currentTarget.getAttribute('href'))}
+                    className="block px-3 py-2 rounded-lg text-base font-medium text-neutral-600 hover:text-primary hover:bg-primary-lighter transition-all duration-200"
+                  >
+                    {link.text}
+                  </motion.a>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </header>
+    </motion.header>
   );
 };
 
